@@ -1,0 +1,39 @@
+﻿@page "/"
+@inject IJSRuntime JSRuntime
+@using System.Numerics
+@using TreeModel
+
+<h3>Blazor and Three.js</h3>
+<canvas id="threeJsCanvas" style="width: 800px; height: 600px;"></canvas>
+<div id="info">
+    <table>
+        <tr>
+            <th>fps</th>
+            <td id="info_fps"></td>
+        </tr>
+    </table>
+</div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // JavaScriptのinitializeScene関数を呼び出し
+            await JSRuntime.InvokeVoidAsync("JSapi.initializeScene", "threeJsCanvas");
+            { // 木
+                Tree tree = new Tree(new Vector3(0,1,0),10,10);
+                var child1 = new BranchNode(new Vector3(0, 1, 0), 10.0, 1.0);
+                var child2 = new BranchNode(new Vector3(0, 0, 1), 15.0, 0.6);
+
+                child1.AddChild(new BranchNode(new Vector3(1, 0, 0), 5.0, 0.5));
+                child1.AddChild(new BranchNode(new Vector3(0, 0, 0), 7.0, 0.7));
+                child2.AddChild(new BranchNode(new Vector3(1, 1, 0), 6.0, 0.6));
+
+                tree.AddChild(child1);
+                tree.AddChild(child2);
+                await JSRuntime.InvokeVoidAsync("JSapi.log",tree.Display());
+            }
+        }
+    }
+}    using System.Numerics;
