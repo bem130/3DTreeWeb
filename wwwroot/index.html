@@ -3,24 +3,49 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BlazorThreeJsApp</title>
+    <title>3D Tree Web</title>
     <base href="/" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/controls/PointerLockControls.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/PLYLoader.js"></script> -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luna-object-viewer/luna-object-viewer.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luna-data-grid/luna-data-grid.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luna-dom-viewer/luna-dom-viewer.css" />
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/luna-console/luna-console.css" />
+    <script src="https://cdn.jsdelivr.net/npm/luna-object-viewer/luna-object-viewer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luna-data-grid/luna-data-grid.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luna-dom-viewer/luna-dom-viewer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luna-console/luna-console.js"></script>
 </head>
 <body>
-    <div id="app">
-        Loading...
+    <div class="flexcontainer">
+        <div id="app">
+            Loading...
+        </div>
+        <div id="console-container" class="luna-console-theme-dark"></div>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="index.js"></script>
 </body>
 </html>
+<script>
+const container = document.getElementById('console-container');
+const Console = new LunaConsole(container);
+</script>
 <style>
 
 :root {
     color-scheme: dark;
+}
+.flexcontainer {
+    display: flex;
+    & > * {
+        width: 100%;
+    }
+}
+#console-container {
+    width: 100%;
+    height: calc(100dvh - 20px);
 }
 
 </style>

@@ -42,7 +42,7 @@ window.JSapi = {
         scene.add(TreeGroup);
 
         // クリックしてポインタロックを開始
-        document.addEventListener('click', () => {
+        canvas.addEventListener('click', () => {
             controls.lock();
         });
         var cylinder;
@@ -65,8 +65,8 @@ window.JSapi = {
         // ウィンドウサイズに応じたリサイズ処理
         window.addEventListener('resize', onresize);
         function onresize() {
-            const width = window.innerWidth-20;
-            const height = window.innerHeight-100;
+            const width = window.innerWidth-20-500;
+            const height = window.innerHeight-50;
             renderer.setSize(width, height);
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
@@ -83,7 +83,7 @@ window.JSapi = {
         draw()
     },
     log: function (...arg) {
-        console.log(...arg);
+        Console.log(...arg);
     }
 };
 
