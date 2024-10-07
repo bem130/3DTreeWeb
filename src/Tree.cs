@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -27,7 +28,10 @@ namespace TreeModel {
             Children.Add(child);
         }
 
+        public abstract Vector3 getPos();
+        public abstract Vector3 getAng();
         public abstract string Display(int depth = 0);
+        public abstract List<Vector3> DisplayPos();
     }
 
     public class BranchNode: TreeNode
@@ -45,19 +49,66 @@ namespace TreeModel {
             this.angle = angle;
             this.thickness = thickness;
         }
+        public override Vector3 getPos()
+        {
+            return Parent.getPos() + getAng() * (float)length;
+        }
+        public override Vector3 getAng()
+        {
+            return Vector3.Normalize(Vector3.Transform( Parent.getAng(), EulerToRotationMatrix(angle)));
+        }
         public override string Display(int depth = 0)
         {
             string res = "";
             res += new String(' ', depth*4) + "[BranchNode]\n";
             res += new String(' ', depth*4) + "| Angle     : " + angle +"\n";
             res += new String(' ', depth*4) + "| Length    : " + length +"\n";
-            res += new String(' ', depth*4) + "| Thickness : " + thickness +"\n\n";
+            res += new String(' ', depth*4) + "| Thickness : " + thickness +"\n";
+            res += new String(' ', depth*4) + "|+ Global Pos   : " + getPos() +"\n";
+            res += new String(' ', depth*4) + "|+ Global Angle : " + getAng() +"\n";
+            res += "\n";
             foreach (var child in Children)
             {
                 res += child.Display(depth + 1);
             }
             return res;
         }
+        public override List<Vector3> DisplayPos()
+        {
+            var list = new List<Vector3>();
+            foreach (var child in Children)
+            {
+                list.AddRange(child.DisplayPos());
+            }
+            list.Add(getPos());
+            return list;
+        }
+        static Matrix4x4 EulerToRotationMatrix(Vector3 euler)
+        {
+            float radX = euler.X;
+            float radY = euler.Y;
+            float radZ = euler.Z;
+            Matrix4x4 rotX = new Matrix4x4(
+                1, 0, 0, 0,
+                0, (float)Math.Cos(radX), -(float)Math.Sin(radX), 0,
+                0, (float)Math.Sin(radX), (float)Math.Cos(radX), 0,
+                0, 0, 0, 1
+            );
+            Matrix4x4 rotY = new Matrix4x4(
+                (float)Math.Cos(radY), 0, (float)Math.Sin(radY), 0,
+                0, 1, 0, 0,
+                -(float)Math.Sin(radY), 0, (float)Math.Cos(radY), 0,
+                0, 0, 0, 1
+            );
+            Matrix4x4 rotZ = new Matrix4x4(
+                (float)Math.Cos(radZ), -(float)Math.Sin(radZ), 0, 0,
+                (float)Math.Sin(radZ), (float)Math.Cos(radZ), 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1
+            );
+            return Matrix4x4.Multiply(rotZ, Matrix4x4.Multiply(rotY, rotX));
+        }
+
     }
 
     public class Tree: TreeNode
@@ -76,9 +127,13 @@ namespace TreeModel {
             this.thickness = thickness;
         }
 
-        public Vector3 getPos()
+        public override Vector3 getPos()
         {
             return new Vector3(0,0,0);
+        }
+        public override Vector3 getAng()
+        {
+            return Vector3.Normalize(angle);
         }
 
         public override string Display(int depth = 0)
@@ -93,5 +148,16 @@ namespace TreeModel {
             }
             return res;
         }
+        public override List<Vector3> DisplayPos()
+        {
+            var list = new List<Vector3>();
+            foreach (var child in Children)
+            {
+                list.AddRange(child.DisplayPos());
+            }
+            list.Add(getPos());
+            return list;
+        }
+
     }
 }

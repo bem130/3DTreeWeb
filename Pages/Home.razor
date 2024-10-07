@@ -2,6 +2,7 @@
 @inject IJSRuntime JSRuntime
 @using System.Numerics
 @using TreeModel
+@using System.Text.Json
 
 <canvas id="threeJsCanvas" style="width: 800px; height: 600px;"></canvas>
 <div id="info">
@@ -21,18 +22,29 @@
             // JavaScriptのinitializeScene関数を呼び出し
             await JSRuntime.InvokeVoidAsync("JSapi.initializeScene", "threeJsCanvas");
             { // 木
-                Tree tree = new Tree(new Vector3(0,1,0),10,10);
-                var child1 = new BranchNode(new Vector3(0, 1, 0), 10.0, 1.0);
-                var child2 = new BranchNode(new Vector3(0, 0, 1), 15.0, 0.6);
+                Tree tree = new Tree(new Vector3(0,1,0),3,10);
+                var child1 = new BranchNode(new Vector3(0.1f, 0, 0), 3.0, 1.0);
+                var child2 = new BranchNode(new Vector3(0.2f, 0.9f, 0), 5.0, 0.6);
 
-                child1.AddChild(new BranchNode(new Vector3(1, 0, 0), 5.0, 0.5));
+                @* child1.AddChild(new BranchNode(new Vector3(1, 0, 0), 5.0, 0.5));
                 child1.AddChild(new BranchNode(new Vector3(0, 0, 0), 7.0, 0.7));
-                child2.AddChild(new BranchNode(new Vector3(1, 1, 0), 6.0, 0.6));
+                child2.AddChild(new BranchNode(new Vector3(1, 1, 0), 6.0, 0.6)); *@
 
                 tree.AddChild(child1);
                 tree.AddChild(child2);
                 await JSRuntime.InvokeVoidAsync("JSapi.log",tree.Display());
+                await JSRuntime.InvokeVoidAsync("JSapi.log",ConvertVectorListToString(tree.DisplayPos()));
+                await JSRuntime.InvokeVoidAsync("JSapi.AddPoints",ConvertVectorListToString(tree.DisplayPos()));
             }
         }
+    }
+    static string ConvertVectorListToString(List<Vector3> vectors)
+    {
+        List<string> vectorStrings = new List<string>();
+        foreach (var vector in vectors)
+        {
+            vectorStrings.Add($"[{vector.X},{vector.Y},{vector.Z}]");
+        }
+        return string.Join(", ",vectorStrings);
     }
 }

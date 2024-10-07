@@ -1,6 +1,6 @@
 var camera;
 var controls;
-var group;
+var TreeGroup;
 
 window.JSapi = {
     initializeScene: function (canvasId) {
@@ -45,18 +45,6 @@ window.JSapi = {
         canvas.addEventListener('click', () => {
             controls.lock();
         });
-        var cylinder;
-        {
-            const geometry = new THREE.CylinderGeometry(1, 1, 10, 32);
-            const material = new THREE.MeshStandardMaterial({ color: 0xa04010 });
-            cylinder = new THREE.Mesh(geometry, material);
-
-            // シーンに円柱を追加
-            TreeGroup.add(cylinder);
-            cylinder.position.z = 1;
-            cylinder.position.y = 2;
-            cylinder.rotation.x = 1;
-        }
 
         // カメラの初期位置を設定
         camera.position.z = 6;
@@ -78,9 +66,31 @@ window.JSapi = {
             renderer.render(scene, camera);
         }
 
+
         onresize();
         animate();
         draw()
+    },
+    AddPoints: function (str) {
+        JSON.parse(`[${str}]`).forEach(x=>this.AddPoint(x));
+    },
+    AddPoint: function (p) {
+        const geometry = new THREE.BoxGeometry();
+        const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        const cube = new THREE.Mesh(geometry, material);
+        TreeGroup.add(cube);
+        cube.position.x = p[0];
+        cube.position.y = p[1];
+        cube.position.z = p[2];
+    },
+    AddCylinder: function (p) {
+        const geometry = new THREE.CylinderGeometry(1, 1, 10, 32);
+        const material = new THREE.MeshStandardMaterial({ color: 0xa04010 });
+        const cylinder = new THREE.Mesh(geometry, material);
+        TreeGroup.add(cylinder);
+        cylinder.position.x = p[0];
+        cylinder.position.y = p[1];
+        cylinder.position.z = p[2];
     },
     log: function (...arg) {
         Console.log(...arg);
